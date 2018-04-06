@@ -1,6 +1,4 @@
-# so_game
-
-1. VideoGame (~~2~~ 1 people)
+# VideoGame (~~2~~ 1 people)
    - implement a distributed videogame
      Server Side:
      - the server operates in both TCP and UDP

@@ -1,24 +1,23 @@
 
 #include <GL/glut.h>
 #include <math.h>
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 
 #include "image.h"
 #include "surface.h"
-#include "world.h"
 #include "vehicle.h"
+#include "world.h"
 #include "world_viewer.h"
 
 int window;
 WorldViewer viewer;
 World world;
-Vehicle* vehicle; // The vehicle
+Vehicle *vehicle; // The vehicle
 
-void keyPressed(unsigned char key, int x, int y)
-{
-  switch(key){
+void keyPressed(unsigned char key, int x, int y) {
+  switch (key) {
   case 27:
     glutDestroyWindow(window);
     exit(0);
@@ -44,9 +43,8 @@ void keyPressed(unsigned char key, int x, int y)
   }
 }
 
-
 void specialInput(int key, int x, int y) {
-  switch(key){
+  switch (key) {
   case GLUT_KEY_UP:
     vehicle->translational_force_update += 0.1;
     break;
@@ -60,19 +58,15 @@ void specialInput(int key, int x, int y) {
     vehicle->rotational_force_update -= 0.1;
     break;
   case GLUT_KEY_PAGE_UP:
-    viewer.camera_z+=0.1;
+    viewer.camera_z += 0.1;
     break;
   case GLUT_KEY_PAGE_DOWN:
-    viewer.camera_z-=0.1;
+    viewer.camera_z -= 0.1;
     break;
   }
 }
 
-
-void display(void) {
-  WorldViewer_draw(&viewer);
-}
-
+void display(void) { WorldViewer_draw(&viewer); }
 
 void reshape(int width, int height) {
   WorldViewer_reshapeViewport(&viewer, width, height);
@@ -82,27 +76,27 @@ void idle(void) {
   World_update(&world);
   usleep(30000);
   glutPostRedisplay();
-  
+
   // decay the commands
   vehicle->translational_force_update *= 0.999;
   vehicle->rotational_force_update *= 0.7;
 }
 
 int main(int argc, char **argv) {
-  if (argc<3) {
+  if (argc < 3) {
     printf("usage: %s <server_address> <player texture>\n", argv[1]);
     exit(-1);
   }
 
   printf("loading texture image from %s ... ", argv[2]);
-  Image* my_texture = Image_load(argv[2]);
+  Image *my_texture = Image_load(argv[2]);
   if (my_texture) {
     printf("Done! \n");
   } else {
     printf("Fail! \n");
   }
-  
-  Image* my_texture_for_server;
+
+  Image *my_texture_for_server;
   // todo: connect to the server
   //   -get ad id
   //   -send your texture to the server (so that all can see you)
@@ -111,13 +105,13 @@ int main(int argc, char **argv) {
 
   // these come from the server
   int my_id;
-  Image* map_elevation;
-  Image* map_texture;
-  Image* my_texture_from_server;
+  Image *map_elevation;
+  Image *map_texture;
+  Image *my_texture_from_server;
 
   // construct the world
   World_init(&world, map_elevation, map_texture, 0.5, 0.5, 0.5);
-  vehicle=(Vehicle*) malloc(sizeof(Vehicle));
+  vehicle = (Vehicle *)malloc(sizeof(Vehicle));
   Vehicle_init(&vehicle, &world, my_id, my_texture_from_server);
   World_addVehicle(&world, v);
 
@@ -133,5 +127,5 @@ int main(int argc, char **argv) {
 
   // cleanup
   World_destroy(&world);
-  return 0;             
+  return 0;
 }

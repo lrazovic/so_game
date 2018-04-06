@@ -1,15 +1,15 @@
 #pragma once
 #include "vehicle.h"
 
-//ia brief desription required
+// ia brief desription required
 typedef enum {
-  GetId=0x1,
-  GetTexture=0x2,     //which packet uses this??
-  GetElevation=0x3,   //which packet uses this??
-  PostTexture=0x4,
-  PostElevation=0x5,
-  WorldUpdate=0x6,
-  VehicleUpdate=0x7
+  GetId = 0x1,
+  GetTexture = 0x2,   // which packet uses this??
+  GetElevation = 0x3, // which packet uses this??
+  PostTexture = 0x4,
+  PostElevation = 0x5,
+  WorldUpdate = 0x6,
+  VehicleUpdate = 0x7
 } Type;
 
 typedef struct {
@@ -40,7 +40,7 @@ typedef struct {
 typedef struct {
   PacketHeader header;
   int id;
-  Image* image;
+  Image *image;
 } ImagePacket;
 
 // sent from client to server, in udp to notify the updates
@@ -65,17 +65,16 @@ typedef struct {
 typedef struct {
   PacketHeader header;
   int num_vehicles;
-  ClientUpdate* updates;
+  ClientUpdate *updates;
 } WorldUpdatePacket;
-
 
 // converts a well formed packet into a string in dest.
 // returns the written bytes
 // h is the packet to write
-int Packet_serialize(char* dest, const PacketHeader* h);
+int Packet_serialize(char *dest, const PacketHeader *h);
 
 // returns a newly allocated packet read from the buffer
-PacketHeader* Packet_deserialize(const char* buffer, int size);
+PacketHeader *Packet_deserialize(const char *buffer, int size);
 
 // deletes a packet, freeing memory
-void Packet_free(PacketHeader* h);
+void Packet_free(PacketHeader *h);
