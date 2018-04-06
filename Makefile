@@ -1,6 +1,7 @@
-CCOPTS= -Wall -g -std=gnu99 -Wstrict-prototypes
-LIBS= -lglut -lGLU -lGL -lm -lpthread
-CC=gcc
+CCOPTS= -Wall -g -std=gnu99 -Wstrict-prototypes -framework OpenGL -framework GLUT 
+LIBS=  -lm -lpthread 
+#CC=gcc
+CC=gcc-7
 AR=ar
 
 
@@ -47,3 +48,7 @@ test_packets_serialization: test_packets_serialization.c libso_game.a
 
 clean:
 	rm -rf *.o *~  $(BINS)
+
+test:
+	./so_game images/arrow-right.ppm images/maze.ppm
+

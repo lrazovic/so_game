@@ -1,5 +1,5 @@
 #include "vehicle.h"
-#include <GL/gl.h>
+#include <OpenGL/gl.h>
 #include <math.h>
 #include "world.h"
 

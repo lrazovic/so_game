@@ -1,5 +1,5 @@
-#include <GL/gl.h>
-#include <GL/glut.h>
+#include <OpenGL/gl.h>
+#include <GLUT/glut.h>
 #include <stdio.h>
 #include <math.h>
 #include <assert.h>
