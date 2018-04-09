@@ -36,6 +36,8 @@
 *.x86_64
 *.hex
 so_game
+so_game_server
+so_game_client
 test_packets_serialization
 
 # Debug files
@@ -86,3 +88,4 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+

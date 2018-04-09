@@ -1,7 +1,6 @@
 # VideoGame (~~2~~ 1 people)
 ## Implement a distributed videogame
-     Server Side:
-     - the server operates in both TCP and UDP
+     Server side does the following
        TCP Part
        - registerning a new client when it comes online
        - deregistering a client when it goes offline
@@ -14,8 +13,7 @@
        - the server sends to each connected client
          the position of the agents around him
 
-     Client side
-     - the client does the following
+     Client side does the following
      - connects to the server (TCP)
      - requests the map, and gets an ID from the server (TCP)
      - receives udates on the state from the server
