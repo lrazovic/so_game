@@ -1,5 +1,5 @@
 # VideoGame (~~2~~ 1 people)
-   - implement a distributed videogame
+## Implement a distributed videogame
      Server Side:
      - the server operates in both TCP and UDP
        TCP Part

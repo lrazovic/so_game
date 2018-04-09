@@ -1,9 +1,8 @@
-
-// #include <GL/glut.h> // not needed here
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "image.h"
 #include "surface.h"

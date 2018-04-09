@@ -1,5 +1,5 @@
-CCOPTS= -Wall -g -std=gnu99 -Wstrict-prototypes -framework OpenGL -framework GLUT
-LIBS= -lm -lpthread 
+CCOPTS= -Wall -g -std=gnu99 -Wstrict-prototypes -framework OpenGL
+LIBS= -lm -lpthread -lGLUT
 #CC=gcc
 CC=gcc-7
 AR=ar
@@ -42,6 +42,12 @@ libso_game.a: $(OBJS)
 so_game: so_game.c libso_game.a 
 	$(CC) $(CCOPTS) -Ofast -o $@ $^ $(LIBS)
 
+so_game_client: so_game_client.c libso_game.a
+	$(CC) $(CCOPTS) -Ofast -o $@ $^ $(LIBS)
+
+so_game_server: so_game_server.c libso_game.a
+	$(CC) $(CCOPTS) -Ofast -o $@ $^ $(LIBS)
+
 test_packets_serialization: test_packets_serialization.c libso_game.a  
 	$(CC) $(CCOPTS) -Ofast -o $@ $^  $(LIBS)
 
@@ -49,7 +55,9 @@ clean:
 	rm -rf *.o *~  $(BINS)
 
 test:
-	./so_game images/arrow-right.ppm images/maze.ppm
+	./so_game images/maze.pgm images/maze.ppm
 test-packet:
 	./test_packets_serialization images/arrow-right.ppm images/maze.ppm
+test-server:
+	./so_game_server ./images/maze.pgm ./images/maze.ppm 4444
 
