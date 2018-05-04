@@ -62,7 +62,7 @@ test:
 test-packet:
 	./test_packets_serialization images/arrow-right.ppm images/maze.ppm
 test-server:
-	./so_game_server ./images/maze.pgm ./images/maze.ppm 4444
+	./so_game_server ./images/maze.pgm ./images/maze.ppm 8888
 test-client:
 	./so_game_client ./images/arrow-right.pgm 8888
 

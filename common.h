@@ -24,6 +24,7 @@
 #define SERVER_ADDRESS  "127.0.0.1"
 #define SERVER_COMMAND  "QUIT"
 #define NUM_MSG     10
+#define BUFFERSIZE 8888888
 #define MAX_NUM     (1 << 16)
 #define BUF_SIZE    8
 #define SEED        0
