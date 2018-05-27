@@ -155,7 +155,7 @@ void* UDPSender(void* args) {
     int ret = sendUpdates(socket_udp, server_addr, serverlen);
     if (ret == -1)
       printf("[UDP_Sender] Cannot send VehicleUpdatePacket \n");
-    sleep(TIME_TO_SLEEP);
+    usleep(SENDER_SLEEP_C);
   }
   pthread_exit(NULL);
 }
@@ -164,21 +164,20 @@ void* UDPReceiver(void* args) {
     udp_args_t udp_args = *(udp_args_t*)args;
     struct sockaddr_in server_addr = udp_args.server_addr;
     int socket_udp = udp_args.udp_socket;
+    int socket_tcp = udp_args.tcp_socket;
     socklen_t addrlen = sizeof(server_addr);
     localWorld* lw = udp_args.lw;
-    int socket_tcp = udp_args.tcp_socket;
     while (connectivity) {
-        printf("UDP Recv Started\n");
         char buf_rcv[BUFFER_SIZE];
         int bytes_read = recvfrom(socket_udp, buf_rcv, BUFFER_SIZE, 0,
                                   (struct sockaddr*)&server_addr, &addrlen);
         if (bytes_read == -1) {
             printf("[UDP_Receiver] Can't receive Packet over UDP \n");
-            sleep(RECEIVER_SLEEP);
+            usleep(RECEIVER_SLEEP_C);
             continue;
         }
         if (bytes_read == 0) {
-            sleep(RECEIVER_SLEEP);
+            usleep(RECEIVER_SLEEP_C);
             continue;
         }
  
@@ -186,7 +185,7 @@ void* UDPReceiver(void* args) {
         PacketHeader* ph = (PacketHeader*)buf_rcv;
         if (ph->size != bytes_read) {
             printf("[WARNING] Skipping partial UDP packet \n");
-            sleep(RECEIVER_SLEEP);
+            usleep(RECEIVER_SLEEP_C);
             continue;
         }
         WorldUpdatePacket* wup =
@@ -202,9 +201,12 @@ void* UDPReceiver(void* args) {
             int new_position = -1;
             int id_struct = addUser(lw->ids, WORLDSIZE, wup->updates[i].id,
                                     &new_position, &(lw->users_online));
+            printf("\n\nID STRUCT %d\n", id_struct);
             if (wup->updates[i].id == my_id) {
                 pthread_mutex_lock(&lw->vehicles[0]->mutex);
                 Vehicle_setXYTheta(lw->vehicles[0], wup->updates[i].x,
+                                   wup->updates[i].y, wup->updates[i].theta);
+                printf("[UDP_Receiver] Updateded 1 %f %f %f \n", wup->updates[i].x,
                                    wup->updates[i].y, wup->updates[i].theta);
                 pthread_mutex_unlock(&lw->vehicles[0]->mutex);
             } else if (id_struct == -1) {
@@ -222,6 +224,8 @@ void* UDPReceiver(void* args) {
                 Vehicle_setXYTheta(lw->vehicles[new_position],
                                    wup->updates[i].x, wup->updates[i].y,
                                    wup->updates[i].theta);
+                printf("[UDP_Receiver] Updateded 2 %f %f %f \n", wup->updates[i].x,
+                                   wup->updates[i].y, wup->updates[i].theta);
                 pthread_mutex_unlock(&lw->vehicles[new_position]->mutex);
                 World_addVehicle(&world, new_vehicle);
                 lw->has_vehicle[new_position] = 1;
@@ -250,6 +254,8 @@ void* UDPReceiver(void* args) {
                                        wup->updates[i].x, wup->updates[i].y,
                                        wup->updates[i].theta);
                     pthread_mutex_unlock(&lw->vehicles[id_struct]->mutex);
+                    printf("[UDP_Receiver] Updateded 3 %f %f %f \n", wup->updates[i].x,
+                                   wup->updates[i].y, wup->updates[i].theta);
                     World_addVehicle(&world, new_vehicle);
                     lw->has_vehicle[id_struct] = 1;
                     lw->vehicle_login_time[id_struct] =
@@ -288,7 +294,7 @@ void* UDPReceiver(void* args) {
             Packet_free(&wup->header);
             break;
         }
-        sleep(RECEIVER_SLEEP);
+        sleep(RECEIVER_SLEEP_C);
     }
     pthread_exit(NULL);
 }

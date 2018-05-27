@@ -106,7 +106,7 @@ void* UDPSender(void* args) {
   int socket_udp = *(int*)args;
   while (connectivity) {
     if (!has_users) {
-      sleep(SENDER_SLEEP);
+      usleep(SENDER_SLEEP_S);
       continue;
     }
     pthread_mutex_lock(&users_mutex);
@@ -198,7 +198,7 @@ void* UDPSender(void* args) {
     }
     fprintf(stdout, "[UDP_Send] WorldUpdatePacket sent to each client \n");
     pthread_mutex_unlock(&users_mutex);
-    sleep(SENDER_SLEEP);
+    usleep(SENDER_SLEEP_S);
   }
   pthread_exit(NULL);
 }
@@ -210,7 +210,7 @@ void *UDPReceiver(void *args)
   {
     if (!has_users)
     {
-      sleep(1);
+      usleep(RECEIVER_SLEEP_S);
       continue;
     }
     char buf_recv[BUFFER_SIZE];
@@ -234,7 +234,7 @@ void *UDPReceiver(void *args)
           "[UDP_Receiver] UDP Handler couldn't manage to apply the "
           "VehicleUpdate \n");
   END:
-    sleep(1);
+    usleep(RECEIVER_SLEEP_S);
   }
   pthread_exit(NULL);
 }
@@ -541,7 +541,7 @@ void *UpdateLoop(void *args)
   while (connectivity)
   {
     World_update(&world);
-    sleep(1);
+    usleep(100000);
   }
   pthread_exit(NULL);
 }
