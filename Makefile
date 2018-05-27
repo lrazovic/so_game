@@ -16,7 +16,7 @@ OBJS = image.o\
        so_game_server.o\
        so_game_client.o\
        surface.o\
-       user_list.o\
+       client_list.o\
        vec3.o\
        vehicle.o\
        world.o\
@@ -28,7 +28,7 @@ HEADERS=common.h\
 		linked_list.h\
 		so_game_protocol.h\
 		surface.h\
-		user_list.h\
+		client_list.h\
 		vec3.h\
 		vehicle.h\
 		world.h\

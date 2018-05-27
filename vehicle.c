@@ -59,6 +59,7 @@ int Vehicle_update(Vehicle* v, float dt)
 
 void Vehicle_init(Vehicle* v, World* w, int id, Image* texture)
 {
+    pthread_mutex_init(&v->mutex,NULL);
     v->world = w;
     v->id = id;
     v->texture = texture;
@@ -72,6 +73,8 @@ void Vehicle_init(Vehicle* v, World* w, int id, Image* texture)
     v->max_translational_force = 10;
     v->min_rotational_force = 0.05;
     v->min_translational_force = 0.05;
+        v->translational_force_intention = 0;
+    v->rotational_force_intention = 0;
     v->translational_velocity = 0;
     v->rotational_velocity = 0;
     Vehicle_reset(v);
@@ -100,10 +103,22 @@ void Vehicle_getForcesUpdate(Vehicle* v, float* translational_update, float* rot
     *rotational_update = v->rotational_force_update;
 }
 
+void Vehicle_getForcesIntentionUpdate(Vehicle* v, float* translational_update, float* rotational_update)
+{
+    *translational_update = v->translational_force_intention;
+    *rotational_update = v->rotational_force_intention;
+}
+
 void Vehicle_setForcesUpdate(Vehicle* v, float translational_update, float rotational_update)
 {
     v->translational_force_update = translational_update;
     v->rotational_force_update = rotational_update;
+}
+
+void Vehicle_setForcesIntention(Vehicle* v, float translational_update, float rotational_update)
+{
+    v->translational_force_intention = translational_update;
+    v->rotational_force_intention = rotational_update;
 }
 
 void Vehicle_reset(Vehicle* v)
@@ -120,7 +135,8 @@ void Vehicle_reset(Vehicle* v)
 }
 
 void Vehicle_destroy(Vehicle* v)
-{
+{   
+    pthread_mutex_destroy(&v->mutex);
     if (v->_destructor)
         (*v->_destructor)(v);
 }

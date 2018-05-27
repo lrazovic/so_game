@@ -2,7 +2,7 @@
 #include "image.h"
 #include "linked_list.h"
 #include "surface.h"
-
+#include "pthread.h"
 struct World;
 struct Vehicle;
 typedef void (*VehicleDtor)(struct Vehicle* v);
@@ -12,10 +12,11 @@ typedef struct Vehicle {
     int id;
     struct World* world;
     Image* texture;
-
+    pthread_mutex_t mutex;
     // these are the forces that will be applied after the update
-    float translational_force_update;
-    float rotational_force_update;
+    float translational_force_update,translational_force_intention;
+    float rotational_force_update,rotational_force_intention;
+    
     float x, y, z, theta; //position and orientation of the vehicle, on the surface
 
     // dont' touch these
@@ -50,3 +51,7 @@ void Vehicle_setXYTheta(Vehicle* v, float x, float y, float theta);
 void Vehicle_getForcesUpdate(Vehicle* v, float* translational_update, float* rotational_update);
 
 void Vehicle_setForcesUpdate(Vehicle* v, float translational_update, float rotational_update);
+
+void Vehicle_setForcesIntention(Vehicle* v, float translational_update, float rotational_update);
+
+void Vehicle_getForcesIntentionUpdate(Vehicle* v, float* translational_update, float* rotational_update);

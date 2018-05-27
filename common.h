@@ -21,7 +21,11 @@
 #define TCP_PORT 8888
 #define UDP_PORT 8888 
 #define SERVER_ADDRESS "127.0.0.1"
-#define TIME_TO_SLEEP 10000
-#define WORLD_SIZE 10
+#define TIME_TO_SLEEP 0.1
+#define RECEIVER_SLEEP 0.05
+#define WORLDSIZE 256
+#define WORLD_SIZE 256
+#define TOUCHED 1
+#define UNTOUCHED 0
 
 #endif

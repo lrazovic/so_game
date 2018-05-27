@@ -55,16 +55,24 @@ void specialInput(int key, int x, int y)
 {
     switch (key) {
     case GLUT_KEY_UP:
-        viewer.self->translational_force_update += 0.1;
+        pthread_mutex_lock(&(viewer.self->mutex));
+        viewer.self->translational_force_intention += 0.1;
+        pthread_mutex_unlock(&(viewer.self->mutex));
         break;
     case GLUT_KEY_DOWN:
-        viewer.self->translational_force_update -= 0.1;
+        pthread_mutex_lock(&(viewer.self->mutex));
+        viewer.self->translational_force_intention -= 0.1;
+        pthread_mutex_unlock(&(viewer.self->mutex));
         break;
     case GLUT_KEY_LEFT:
-        viewer.self->rotational_force_update += 0.1;
+        pthread_mutex_lock(&(viewer.self->mutex));
+        viewer.self->rotational_force_intention += 0.1;
+        pthread_mutex_unlock(&(viewer.self->mutex));
         break;
     case GLUT_KEY_RIGHT:
-        viewer.self->rotational_force_update -= 0.1;
+        pthread_mutex_lock(&(viewer.self->mutex));
+        viewer.self->rotational_force_intention -= 0.1;
+        pthread_mutex_unlock(&(viewer.self->mutex));;
         break;
     case GLUT_KEY_PAGE_UP:
         viewer.camera_z += 0.1;
@@ -88,7 +96,7 @@ void reshape(int width, int height)
 void idle(void)
 {
     World_update(viewer.world);
-    usleep(30000);
+    sleep(3);
     glutPostRedisplay();
 
     // decay the commands
