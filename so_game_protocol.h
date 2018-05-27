@@ -1,6 +1,6 @@
 #pragma once
 #include "vehicle.h"
-
+#include <sys/time.h>
 //ia brief desription required
 typedef enum {
     GetId = 0x1,
@@ -59,6 +59,7 @@ typedef struct {
     float x;
     float y;
     float theta;
+    struct timeval client_creation_time;
 } ClientUpdate;
 
 // server world update, send by server (UDP)
