@@ -26,7 +26,6 @@
 #define SENDER_SLEEP_S 300 * 1000
 #define RECEIVER_SLEEP_S 20 * 1000
 #define WORLDSIZE 256
-#define WORLD_SIZE 256
 #define TOUCHED 1
 #define UNTOUCHED 0
 

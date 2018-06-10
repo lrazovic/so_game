@@ -294,7 +294,7 @@ void* UDPReceiver(void* args) {
             Packet_free(&wup->header);
             break;
         }
-        sleep(RECEIVER_SLEEP_C);
+        usleep(RECEIVER_SLEEP_C);
     }
     pthread_exit(NULL);
 }
