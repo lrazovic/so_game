@@ -188,6 +188,7 @@ void* UDPReceiver(void* args) {
             usleep(RECEIVER_SLEEP_C);
             continue;
         }
+        
         WorldUpdatePacket* wup =
             (WorldUpdatePacket*)Packet_deserialize(buf_rcv, bytes_read);
         pthread_mutex_lock(&time_lock);
@@ -201,13 +202,11 @@ void* UDPReceiver(void* args) {
             int new_position = -1;
             int id_struct = addUser(lw->ids, WORLDSIZE, wup->updates[i].id,
                                     &new_position, &(lw->users_online));
-            printf("\n\nID STRUCT %d\n", id_struct);
             if (wup->updates[i].id == my_id) {
                 pthread_mutex_lock(&lw->vehicles[0]->mutex);
                 Vehicle_setXYTheta(lw->vehicles[0], wup->updates[i].x,
                                    wup->updates[i].y, wup->updates[i].theta);
-                printf("[UDP_Receiver] Updateded 1 %f %f %f \n", wup->updates[i].x,
-                                   wup->updates[i].y, wup->updates[i].theta);
+                Vehicle_setForcesUpdate(lw->vehicles[0], wup->updates[i].translational_force, wup->updates[i].rotational_force);
                 pthread_mutex_unlock(&lw->vehicles[0]->mutex);
             } else if (id_struct == -1) {
                 if (new_position == -1) continue;
@@ -224,8 +223,7 @@ void* UDPReceiver(void* args) {
                 Vehicle_setXYTheta(lw->vehicles[new_position],
                                    wup->updates[i].x, wup->updates[i].y,
                                    wup->updates[i].theta);
-                printf("[UDP_Receiver] Updateded 2 %f %f %f \n", wup->updates[i].x,
-                                   wup->updates[i].y, wup->updates[i].theta);
+                Vehicle_setForcesUpdate(lw->vehicles[0], wup->updates[i].translational_force, wup->updates[i].rotational_force);
                 pthread_mutex_unlock(&lw->vehicles[new_position]->mutex);
                 World_addVehicle(&world, new_vehicle);
                 lw->has_vehicle[new_position] = 1;
@@ -299,7 +297,6 @@ void* UDPReceiver(void* args) {
     pthread_exit(NULL);
 }
 
-
 int getID(int socket_desc) {
   char buf_send[BUFFER_SIZE];
   char buf_rcv[BUFFER_SIZE];
@@ -345,7 +342,6 @@ int getID(int socket_desc) {
   Packet_free(&(deserialized_packet->header));
   return id;
 }
-
 
 Image* getTextureMap(int socket) {
   char buf_send[BUFFER_SIZE];

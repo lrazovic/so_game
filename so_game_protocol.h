@@ -60,6 +60,8 @@ typedef struct {
     float y;
     float theta;
     struct timeval client_creation_time;
+    float rotational_force;
+    float translational_force;
 } ClientUpdate;
 
 // server world update, send by server (UDP)

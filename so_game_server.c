@@ -19,9 +19,11 @@
 #include "vehicle.h"
 #include "world.h"
 #include "world_viewer.h"
+
 #define HIDE_RANGE 5
+
 // Mark - Structs and Variables
-#define SENDER_SLEEP 300000
+
 typedef struct
 {
   int client_desc;
@@ -46,20 +48,13 @@ pthread_mutex_t users_mutex = PTHREAD_MUTEX_INITIALIZER;
 int UDPHandler(int socket_udp, char *buf_rcv, struct sockaddr_in client_addr)
 {
   PacketHeader *ph = (PacketHeader *)buf_rcv;
-  switch (ph->type)
-  {
-  case (VehicleUpdate):
-  {
     VehicleUpdatePacket *vup =
         (VehicleUpdatePacket *)Packet_deserialize(buf_rcv, ph->size);
     pthread_mutex_lock(&users_mutex);
     ClientListItem *client = ClientList_find_by_id(users, vup->id);
     if (client == NULL)
     {
-      printf(
-          "[UDPHandler] Can't find the user with id %d to apply the update "
-          "\n",
-          vup->id);
+      printf("[UDPHandler] Can't find the user with id %d to apply the update\n ", vup->id);
       Packet_free(&vup->header);
       pthread_mutex_unlock(&users_mutex);
       ERROR_HELPER(-1, "Receied update from client with invalid id");
@@ -97,10 +92,7 @@ int UDPHandler(int socket_udp, char *buf_rcv, struct sockaddr_in client_addr)
     Packet_free(&vup->header);
     return 0;
   }
-  default:
-    return -1;
-  }
-}
+
 
 void* UDPSender(void* args) {
   int socket_udp = *(int*)args;
