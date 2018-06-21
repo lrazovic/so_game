@@ -14,7 +14,6 @@ typedef enum {
   PostDisconnect = 0x8,
 } Type;
 
-
 typedef struct {
   Type type;
   int size;
@@ -75,7 +74,6 @@ typedef struct {
   struct timeval time;
   ClientUpdate* updates;
 } WorldUpdatePacket;
-
 
 // converts a well formed packet into a string in dest.
 // returns the written bytes

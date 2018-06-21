@@ -8,9 +8,9 @@
 #include <string.h>
 #include <sys/time.h>
 #include "common.h"
-#include "vehicle.h"
 #include "image.h"
 #include "surface.h"
+#include "vehicle.h"
 
 void World_destroy(World* w) {
   Surface_destroy(&w->ground);

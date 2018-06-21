@@ -2,8 +2,8 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include "image.h"
-#include "surface.h"
 #include "linked_list.h"
+#include "surface.h"
 struct World;
 struct Vehicle;
 typedef void (*VehicleDtor)(struct Vehicle* v);

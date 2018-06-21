@@ -352,7 +352,7 @@ int main(int argc, char** argv) {
   World_addVehicle(&world, vehicle);
   local_world->vehicles[0] = vehicle;
   local_world->has_vehicle[0] = 1;
-  
+
   // UDP Init
   uint16_t port_number_udp =
       htons((uint16_t)UDPPORT);  // we use network byte order

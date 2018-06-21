@@ -1,6 +1,6 @@
-#include <arpa/inet.h> 
+#include <arpa/inet.h>
 #include <math.h>
-#include <netinet/in.h>  
+#include <netinet/in.h>
 #include <pthread.h>
 #include <signal.h>
 #include <stdio.h>
@@ -8,15 +8,15 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include "image.h"
-#include "surface.h"
-#include "world.h"
-#include "world_viewer.h"
+#include "client_list.h"
 #include "client_op.h"
 #include "common.h"
-#include "client_list.h"
+#include "image.h"
 #include "so_game_protocol.h"
+#include "surface.h"
 #include "vehicle.h"
+#include "world.h"
+#include "world_viewer.h"
 
 // world
 World server_world;
@@ -180,7 +180,7 @@ int TCPHandler(int socket_desc, char* buf_rcv, Image* texture_map,
         image_packet->header = im_head;
         int msg_len = Packet_serialize(buf_send, &image_packet->header);
         printf("[Send Vehicle Texture] bytes written in the buffer: %d\n",
-                    msg_len);
+               msg_len);
         int bytes_sent = 0;
         int ret = 0;
         while (bytes_sent < msg_len) {
@@ -201,8 +201,7 @@ int TCPHandler(int socket_desc, char* buf_rcv, Image* texture_map,
       image_packet->image = texture_map;
       image_packet->header = im_head;
       int msg_len = Packet_serialize(buf_send, &image_packet->header);
-      printf("[Send Map Texture] bytes written in the buffer: %d\n",
-                  msg_len);
+      printf("[Send Map Texture] bytes written in the buffer: %d\n", msg_len);
       int bytes_sent = 0;
       int ret = 0;
       while (bytes_sent < msg_len) {
@@ -267,8 +266,7 @@ int TCPHandler(int socket_desc, char* buf_rcv, Image* texture_map,
       user->vehicle = vehicle;
       World_addVehicle(&server_world, vehicle);
       pthread_mutex_unlock(&users_mutex);
-      printf("[Set Texture] Vehicle texture applied to user with id %d \n",
-                  id);
+      printf("[Set Texture] Vehicle texture applied to user with id %d \n", id);
       free(deserialized_packet);
       return 0;
     }
@@ -490,11 +488,10 @@ void* UDPSender(void* args) {
       int ret = sendto(socket_udp, buf_send, size, 0,
                        (struct sockaddr*)&client->user_addr_udp,
                        (socklen_t)sizeof(client->user_addr_udp));
-      printf(
-          "[UDP_Send] Sent WorldUpdate of %d bytes to client with id %d \n",
-          ret, client->id);
+      printf("[UDP_Send] Sent WorldUpdate of %d bytes to client with id %d \n",
+             ret, client->id);
       printf("Difference lenght check - wup: %d client found:%d \n",
-                  wup->num_vehicles, n);
+             wup->num_vehicles, n);
     END:
       Packet_free(&(wup->header));
       client = client->next;
@@ -545,7 +542,7 @@ int main(int argc, char** argv) {
   int ret = 0;
   if (argc < 4) {
     printf("usage: %s <elevation_image> <texture_image> <port_number>\n",
-                argv[1]);
+           argv[1]);
     exit(-1);
   }
   char* elevation_filename = argv[1];

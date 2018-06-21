@@ -6,13 +6,13 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include "common.h"
 #include "image.h"
+#include "so_game_protocol.h"
 #include "surface.h"
+#include "vehicle.h"
 #include "world.h"
 #include "world_viewer.h"
-#include "common.h"
-#include "so_game_protocol.h"
-#include "vehicle.h"
 
 // Used to get ID from server
 int getID(int socket_desc) {

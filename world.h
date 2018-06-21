@@ -1,13 +1,13 @@
 #pragma once
 #include <sys/time.h>
-#include "linked_list.h"
-#include "vehicle.h"
 #include "image.h"
+#include "linked_list.h"
 #include "surface.h"
+#include "vehicle.h"
 
 typedef struct World {
-  ListHead vehicles; 
-  Surface ground;  
+  ListHead vehicles;
+  Surface ground;
   float dt;
   struct timeval last_update;
   float time_scale;
