@@ -28,8 +28,7 @@ typedef struct Vehicle {
   // dont' touch these
   char is_new, manual_updated;
   float temp_x, temp_y;
-  float prev_x, prev_y, prev_z,
-      prev_theta;  // orientation of the vehicle, on the surface
+  float prev_x, prev_y, prev_z, prev_theta;  // orientation of the vehicle, on the surface
   float translational_velocity;
   float rotational_velocity;
   float translational_viscosity;

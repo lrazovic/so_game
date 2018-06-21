@@ -18,23 +18,27 @@
 #include "world.h"
 #include "world_viewer.h"
 
-// world related variables
+/// Mark - Variables
+
+// World
 int window;
 World world;
 Vehicle* vehicle;
 int id;
 
-// flags and counters
-char connectivity = 1;
-char exchange_update = 1;
-
-// networking
+// Network
 uint16_t port_number_no;
-int socket_desc = -1;  // socket tcp
-int socket_udp = -1;   // socket udp
+int socket_desc = -1;  
+int socket_udp = -1;
 struct timeval last_update_time;
 struct timeval start_time;
 pthread_mutex_t time_lock = PTHREAD_MUTEX_INITIALIZER;
+
+// Flags
+char connectivity = 1;
+char exchange_update = 1;
+
+/// Mark - Structs
 
 typedef struct localWorld {
   int ids[WORLDSIZE];
@@ -50,6 +54,8 @@ typedef struct listenArgs {
   int socket_udp;
   int socket_tcp;
 } udpArgs;
+
+/// Mark - Functions
 
 int addUser(int ids[], int size, int id2, int* position, int* users_online) {
   if (*users_online == WORLDSIZE) {
@@ -76,13 +82,11 @@ int sendUpdates(int socket_udp, struct sockaddr_in server_addr, int serverlen) {
   char buf_send[BUFFERSIZE];
   PacketHeader ph;
   ph.type = VehicleUpdate;
-  VehicleUpdatePacket* vup =
-      (VehicleUpdatePacket*)malloc(sizeof(VehicleUpdatePacket));
+  VehicleUpdatePacket* vup = (VehicleUpdatePacket*)malloc(sizeof(VehicleUpdatePacket));
   vup->header = ph;
   gettimeofday(&vup->time, NULL);
   pthread_mutex_lock(&vehicle->mutex);
-  Vehicle_getForcesIntention(vehicle, &(vup->translational_force),
-                             &(vup->rotational_force));
+  Vehicle_getForcesIntention(vehicle, &(vup->translational_force), &(vup->rotational_force));
   Vehicle_setForcesIntention(vehicle, 0, 0);
   pthread_mutex_unlock(&vehicle->mutex);
   vup->id = id;
@@ -100,7 +104,7 @@ int sendUpdates(int socket_udp, struct sockaddr_in server_addr, int serverlen) {
   return 0;
 }
 
-// Send vehicleUpdatePacket to server
+// Invia pacchetti vehicleUpdatePacket al Server
 void* UDPSender(void* args) {
   udpArgs udp_args = *(udpArgs*)args;
   struct sockaddr_in server_addr = udp_args.server_addr;
@@ -114,7 +118,7 @@ void* UDPSender(void* args) {
   pthread_exit(NULL);
 }
 
-// Receive and apply WorldUpdatePacket from server
+// Riceve ed Applica pacchetti WorldUpdatePacket provenienti dal Server
 void* UDPReceiver(void* args) {
   udpArgs udp_args = *(udpArgs*)args;
   struct sockaddr_in server_addr = udp_args.server_addr;
@@ -287,6 +291,8 @@ void* UDPReceiver(void* args) {
   }
   pthread_exit(NULL);
 }
+
+/// Mark - Main
 
 int main(int argc, char** argv) {
   if (argc < 3) {

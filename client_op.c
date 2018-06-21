@@ -14,7 +14,7 @@
 #include "world.h"
 #include "world_viewer.h"
 
-// Used to get ID from server
+// Richiedere ID
 int getID(int socket_desc) {
   char buf_send[BUFFERSIZE];
   char buf_rcv[BUFFERSIZE];
@@ -61,6 +61,7 @@ int getID(int socket_desc) {
   return id;
 }
 
+// Richiedere Elevation Map
 Image* getElevationMap(int socket) {
   char buf_send[BUFFERSIZE];
   char buf_rcv[BUFFERSIZE];
@@ -111,6 +112,7 @@ Image* getElevationMap(int socket) {
   return ris;
 }
 
+// Richiedere TextureMap
 Image* getTextureMap(int socket) {
   char buf_send[BUFFERSIZE];
   char buf_rcv[BUFFERSIZE];
@@ -158,6 +160,7 @@ Image* getTextureMap(int socket) {
   return ris;
 }
 
+// Inviare Texture del Veicolo
 int sendVehicleTexture(int socket, Image* texture, int id) {
   char buf_send[BUFFERSIZE];
   ImagePacket* request = (ImagePacket*)malloc(sizeof(ImagePacket));
@@ -182,6 +185,7 @@ int sendVehicleTexture(int socket, Image* texture, int id) {
   return 0;
 }
 
+// Richiedere Texture Veicolo
 Image* getVehicleTexture(int socket, int id) {
   char buf_send[BUFFERSIZE];
   char buf_rcv[BUFFERSIZE];
@@ -236,6 +240,7 @@ Image* getVehicleTexture(int socket, int id) {
   return im;
 }
 
+// Gestire la Disconnessione
 int sendGoodbye(int socket, int id) {
   char buf_send[BUFFERSIZE];
   IdPacket* idpckt = (IdPacket*)malloc(sizeof(IdPacket));

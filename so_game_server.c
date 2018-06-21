@@ -18,25 +18,25 @@
 #include "world.h"
 #include "world_viewer.h"
 
-// world
+/// Mark - Variables
+
+// World
 World server_world;
 struct timeval world_update_time;
 
-// flags
-int connectivity = 1;
-int exchange_update = 1;
-int has_users = 0;
-
-// lists
-ClientListHead* users;
-
-// networking
+// Network
 uint16_t port_number_no;
 int server_tcp = -1;
 int server_udp;
-
-// syncronization
 pthread_mutex_t users_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+// Flags
+int connectivity = 1;
+int exchange_update = 1;
+int has_users = 0;
+ClientListHead* users;
+
+/// Mark - Struct
 
 typedef struct {
   int client_desc;
@@ -45,7 +45,9 @@ typedef struct {
   struct sockaddr_in client_addr_tcp;
 } tcpArgs;
 
-// Send a postDisconnect packet to a client over UDP
+/// Mark - Functions
+
+// Invia un Packet PostDisconnect per gestire la disconnessione
 void sendDisconnect(int socket_udp, struct sockaddr_in client_addr) {
   char buf_send[BUFFERSIZE];
   PacketHeader ph;
@@ -66,8 +68,7 @@ void sendDisconnect(int socket_udp, struct sockaddr_in client_addr) {
 
 int UDPHandler(int socket_udp, char* buf_rcv, struct sockaddr_in client_addr) {
   PacketHeader* ph = (PacketHeader*)buf_rcv;
-  switch (ph->type) {
-    case (VehicleUpdate): {
+  if(ph->type == VehicleUpdate) {
       VehicleUpdatePacket* vup =
           (VehicleUpdatePacket*)Packet_deserialize(buf_rcv, ph->size);
       pthread_mutex_lock(&users_mutex);
@@ -76,11 +77,9 @@ int UDPHandler(int socket_udp, char* buf_rcv, struct sockaddr_in client_addr) {
         int sockaddr_len = sizeof(struct sockaddr_in);
         char addr_udp[sockaddr_len];
         char addr_tcp[sockaddr_len];
-        const char* pt_addr_udp =
-            inet_ntop(client_addr.sin_family, &(client_addr.sin_addr), addr_udp,
+        inet_ntop(client_addr.sin_family, &(client_addr.sin_addr), addr_udp,
                       sockaddr_len);
-        const char* pt_addr_tcp =
-            inet_ntop(client_addr.sin_family, &(client->user_addr_tcp.sin_addr),
+        inet_ntop(client_addr.sin_family, &(client->user_addr_tcp.sin_addr),
                       addr_tcp, sockaddr_len);
         client->user_addr_udp = client_addr;
         client->is_udp_addr_ready = 1;
@@ -101,14 +100,10 @@ int UDPHandler(int socket_udp, char* buf_rcv, struct sockaddr_in client_addr) {
               "[UDP_Receiver] Applied VehicleUpdatePacket with "
               "force_translational_update: %f force_rotation_update: %f.. \n",
               vup->translational_force, vup->rotational_force);
-    END:
       pthread_mutex_unlock(&users_mutex);
       Packet_free(&vup->header);
       return 0;
-    }
-    default:
-      return -1;
-  }
+    } else return -1; // Pacchetto mal formato
 }
 
 int TCPHandler(int socket_desc, char* buf_rcv, Image* texture_map,
@@ -283,8 +278,8 @@ int TCPHandler(int socket_desc, char* buf_rcv, Image* texture_map,
   }
 }
 
-// Handle authentication and disconnection
-void* TCPFlow(void* args) {
+// Gestisce la connessione TCP
+void* TCPMaster(void* args) {
   tcpArgs* tcp_args = (tcpArgs*)args;
   int sock_fd = tcp_args->client_desc;
   pthread_mutex_lock(&users_mutex);
@@ -360,7 +355,7 @@ END:
   pthread_exit(NULL);
 }
 
-// Receive and apply VehicleUpdatePacket from clients
+// Riceve ed applica i pacchetti VehicleUpdatePacket
 void* UDPReceiver(void* args) {
   int socket_udp = *(int*)args;
   while (connectivity && exchange_update) {
@@ -391,8 +386,7 @@ void* UDPReceiver(void* args) {
   pthread_exit(NULL);
 }
 
-// Send WorldUpdatePacket to every client that sent al least one
-// VehicleUpdatePacket
+// Invia un WorldUpdatePacket ad ogni client
 void* UDPSender(void* args) {
   int socket_udp = *(int*)args;
   while (connectivity && exchange_update) {
@@ -434,6 +428,7 @@ void* UDPSender(void* args) {
         }
         check = check->next;
       }
+      
       // find num of eligible clients to receive the worldUpdatePacket
       ClientListItem* tmp = users->first;
       while (tmp != NULL) {
@@ -503,14 +498,13 @@ void* UDPSender(void* args) {
   pthread_exit(NULL);
 }
 
+// Autenticazione client
 void* TCPAuth(void* args) {
   tcpArgs* tcp_args = (tcpArgs*)args;
   int sockaddr_len = sizeof(struct sockaddr_in);
   while (connectivity) {
     struct sockaddr_in client_addr = {0};
-    // Setup to accept client connection
-    int client_desc = accept(server_tcp, (struct sockaddr*)&client_addr,
-                             (socklen_t*)&sockaddr_len);
+    int client_desc = accept(server_tcp, (struct sockaddr*)&client_addr, (socklen_t*)&sockaddr_len);
     if (client_desc == -1 && errno == EINTR) {
       printf("Errore");
       continue;
@@ -522,14 +516,17 @@ void* TCPAuth(void* args) {
     new_tcp_args.elevation_texture = tcp_args->elevation_texture;
     new_tcp_args.surface_texture = tcp_args->surface_texture;
     new_tcp_args.client_addr_tcp = client_addr;
-    // Create a thread for each client
-    int ret = pthread_create(&threadTCP, NULL, TCPFlow, &new_tcp_args);
+
+    // Crea un Thread per ogni client connesso
+    int ret = pthread_create(&threadTCP, NULL, TCPMaster, &new_tcp_args);
     PTHREAD_ERROR_HELPER(ret, "[MAIN] pthread_create on thread tcp failed");
     ret = pthread_detach(threadTCP);
   }
   pthread_exit(NULL);
 }
-void* worldLoop() {
+
+// Aggiornamento del mondo
+void* worldLoop(void* args) {
   printf("[WorldLoop] World Update loop initialized \n");
   while (connectivity) {
     World_update(&server_world);
@@ -537,6 +534,8 @@ void* worldLoop() {
   }
   pthread_exit(NULL);
 }
+
+/// Mark - Main
 
 int main(int argc, char** argv) {
   int ret = 0;
